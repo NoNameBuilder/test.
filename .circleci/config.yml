@@ -13,6 +13,11 @@ jobs:
             sudo apt-get install -y repo git-lfs
             git lfs install
       - run:
+          name: "Set Git user information"
+          command: |
+            git config --global user.email "diamondguys256x@gmail.com"
+            git config --global user.name "NoNameBuilder"
+      - run:
           name: "Initialize repo"
           command: |
             repo init -u https://github.com/Evolution-X/manifest -b vic
@@ -57,4 +62,3 @@ workflows:
   build-rom-workflow:
     jobs:
       - build-rom
-      
