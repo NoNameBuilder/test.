@@ -57,6 +57,14 @@ jobs:
           name: "Build the ROM"
           command: |
             m evolution
+      - run:
+          name: "Save ROM as Artifact"
+          command: |
+            mkdir -p /tmp/artifacts
+            cp out/target/product/zircon/evolution*.zip /tmp/artifacts/
+      - store_artifacts:
+          path: /tmp/artifacts
+          destination: rom-builds
 
 workflows:
   build-rom-workflow:
