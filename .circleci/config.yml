@@ -1,29 +1,21 @@
 version: 2.1
 
 jobs:
-  say-hello:
-    docker:
-      - image: cimg/base:current
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-
   build-rom:
     docker:
       - image: cimg/base:current
     steps:
       - checkout
       - run:
-          name: "Install repo tool"
+          name: "Install repo tool and Git LFS"
           command: |
             sudo apt-get update
-            sudo apt-get install -y repo
+            sudo apt-get install -y repo git-lfs
+            git lfs install
       - run:
           name: "Initialize repo"
           command: |
-            repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs
+            repo init -u https://github.com/Evolution-X/manifest -b vic
       - run:
           name: "Sync repo"
           command: |
@@ -62,9 +54,7 @@ jobs:
             m evolution
 
 workflows:
-  say-hello-workflow:
+  build-rom-workflow:
     jobs:
-      - say-hello
-      - build-rom:
-          requires:
-            - say-hello
+      - build-rom
+      
