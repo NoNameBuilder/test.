@@ -25,26 +25,66 @@ jobs:
           name: "Sync repo"
           command: |
             repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+      - restore_cache:
+          keys:
+            - git-cache-miui-camera
       - run:
           name: "Pull MIUI Camera"
+          timeout: 120m
           command: |
-            git clone https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera $(pwd)/device/xiaomi/zircon/miuicamera
+            git clone --depth=1 https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera $(pwd)/device/xiaomi/zircon/miuicamera
+      - save_cache:
+          paths:
+            - $(pwd)/device/xiaomi/zircon/miuicamera
+          key: git-cache-miui-camera
+      - restore_cache:
+          keys:
+            - git-cache-kernel
       - run:
           name: "Pull Kernel Source"
+          timeout: 120m
           command: |
-            git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886 $(pwd)/kernel/xiaomi/mt6886
+            git clone --depth=1 https://github.com/zircon-development/android_kernel_xiaomi_mt6886 $(pwd)/kernel/xiaomi/mt6886
+      - save_cache:
+          paths:
+            - $(pwd)/kernel/xiaomi/mt6886
+          key: git-cache-kernel
+      - restore_cache:
+          keys:
+            - git-cache-sepolicy-vndr
       - run:
           name: "Pull Sepolicy Vendor"
+          timeout: 120m
           command: |
-            git clone https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr $(pwd)/device/mediatek/sepolicy_vndr
+            git clone --depth=1 https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr $(pwd)/device/mediatek/sepolicy_vndr
+      - save_cache:
+          paths:
+            - $(pwd)/device/mediatek/sepolicy_vndr
+          key: git-cache-sepolicy-vndr
+      - restore_cache:
+          keys:
+            - git-cache-kernel-modules
       - run:
           name: "Pull Kernel Modules"
+          timeout: 120m
           command: |
-            git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules $(pwd)/kernel/xiaomi/mt6886-modules
+            git clone --depth=1 https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules $(pwd)/kernel/xiaomi/mt6886-modules
+      - save_cache:
+          paths:
+            - $(pwd)/kernel/xiaomi/mt6886-modules
+          key: git-cache-kernel-modules
+      - restore_cache:
+          keys:
+            - git-cache-vendor
       - run:
           name: "Pull proprietary_vendor_xiaomi_zircon"
+          timeout: 120m
           command: |
-            git clone https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon $(pwd)/vendor/xiaomi/zircon
+            git clone --depth=1 https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon $(pwd)/vendor/xiaomi/zircon
+      - save_cache:
+          paths:
+            - $(pwd)/vendor/xiaomi/zircon
+          key: git-cache-vendor
       - run:
           name: "Set up build environment"
           command: |
