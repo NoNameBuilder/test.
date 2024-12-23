@@ -15,8 +15,12 @@ jobs:
               lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip python-is-python3 \
               bc ccache libstdc++6 ninja-build
       - run:
-          name: "Install ccache"
-          command: sudo apt-get install -y ccache
+          name: "Install repo command"
+          command: |
+            mkdir -p ~/bin
+            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+            chmod a+x ~/bin/repo
+            export PATH=~/bin:$PATH
       - run:
           name: "Sync ROM sources"
           command: |
