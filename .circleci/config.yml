@@ -37,4 +37,18 @@ jobs:
             git clone https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
             git clone https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
             git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
-            git clone https://github.com/zircon-development/android_device_mediatek_se
+            git clone https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
+      - run:
+          name: "Set up build environment"
+          command: |
+            source build/envsetup.sh
+            lunch lineage_zircon-ap3a-userdebug
+      - run:
+          name: "Start ROM build"
+          command: |
+            m evolution
+
+workflows:
+  build-rom-workflow:
+    jobs:
+      - build-rom
