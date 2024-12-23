@@ -30,27 +30,24 @@ jobs:
       - run:
           name: "Pull additional repositories"
           command: |
-            git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
+            git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon device/xiaomi/zircon
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
+            git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules kernel/xiaomi/mt6886-modules
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
+            git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 -b lineage-22.0-dtbo dtbo
       - run:
-          name: "Link device tree"
-          command: |
-            mkdir -p device/xiaomi/zircon
-            ln -s $(pwd)/vendor/xiaomi/zircon device/xiaomi/zircon
-      - run:
-          name: "Source build environment and set up device"
-          command: |
-            source build/envsetup.sh
-            breakfast lineageos_zircon_ap3a-userdebug
-      - run:
-          name: "Set up ccache"
+          name: "Set up build environment"
           command: |
             export USE_CCACHE=1
             export CCACHE_DIR=~/.ccache
             export CCACHE_EXEC=/usr/bin/ccache
             ccache -M 50G
+            source build/envsetup.sh
+      - run:
+          name: "Lunch device configuration"
+          command: |
+            lunch lineage_zircon-ap3a-userdebug
       - run:
           name: "Start ROM build"
           command: |
@@ -61,3 +58,4 @@ workflows:
   build-and-deploy:
     jobs:
       - build-rom
+      
