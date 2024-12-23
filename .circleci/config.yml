@@ -7,84 +7,29 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Install repo tool and Git LFS"
+          name: "Install dependencies"
           command: |
             sudo apt-get update
-            sudo apt-get install -y repo git-lfs
-            git lfs install
+            sudo apt-get install -y git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev \
+              gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev \
+              lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip python-is-python3 \
+              bc ccache libstdc++6 ninja-build
       - run:
-          name: "Set Git user information"
-          command: |
-            git config --global user.email "diamondguys256x@gmail.com"
-            git config --global user.name "NoNameBuilder"
+          name: "Install ccache"
+          command: sudo apt-get install -y ccache
       - run:
-          name: "Initialize repo"
+          name: "Sync ROM sources"
           command: |
-            repo init -u https://github.com/Evolution-X/manifest -b vic
-      - run:
-          name: "Sync repo"
-          command: |
+            repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs
             repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-      - restore_cache:
-          keys:
-            - git-cache-miui-camera
       - run:
-          name: "Pull MIUI Camera"
-          timeout: 120m
+          name: "Pull additional repositories"
           command: |
-            git clone --depth=1 https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera $(pwd)/device/xiaomi/zircon/miuicamera
-      - save_cache:
-          paths:
-            - $(pwd)/device/xiaomi/zircon/miuicamera
-          key: git-cache-miui-camera
-      - restore_cache:
-          keys:
-            - git-cache-kernel
-      - run:
-          name: "Pull Kernel Source"
-          timeout: 120m
-          command: |
-            git clone --depth=1 https://github.com/zircon-development/android_kernel_xiaomi_mt6886 $(pwd)/kernel/xiaomi/mt6886
-      - save_cache:
-          paths:
-            - $(pwd)/kernel/xiaomi/mt6886
-          key: git-cache-kernel
-      - restore_cache:
-          keys:
-            - git-cache-sepolicy-vndr
-      - run:
-          name: "Pull Sepolicy Vendor"
-          timeout: 120m
-          command: |
-            git clone --depth=1 https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr $(pwd)/device/mediatek/sepolicy_vndr
-      - save_cache:
-          paths:
-            - $(pwd)/device/mediatek/sepolicy_vndr
-          key: git-cache-sepolicy-vndr
-      - restore_cache:
-          keys:
-            - git-cache-kernel-modules
-      - run:
-          name: "Pull Kernel Modules"
-          timeout: 120m
-          command: |
-            git clone --depth=1 https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules $(pwd)/kernel/xiaomi/mt6886-modules
-      - save_cache:
-          paths:
-            - $(pwd)/kernel/xiaomi/mt6886-modules
-          key: git-cache-kernel-modules
-      - restore_cache:
-          keys:
-            - git-cache-vendor
-      - run:
-          name: "Pull proprietary_vendor_xiaomi_zircon"
-          timeout: 120m
-          command: |
-            git clone --depth=1 https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon $(pwd)/vendor/xiaomi/zircon
-      - save_cache:
-          paths:
-            - $(pwd)/vendor/xiaomi/zircon
-          key: git-cache-vendor
+            git clone https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
+            git clone https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
+            git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
+            git clone https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
+            git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules kernel/xiaomi/mt6886/modules
       - run:
           name: "Set up build environment"
           command: |
@@ -92,25 +37,17 @@ jobs:
             export PATH=$PATH:$PWD/prebuilts/misc/linux-x86/ccache
             export USE_CCACHE=1
             ccache -M 50G
-
       - run:
           name: "Lunch the device"
           command: |
+            . build/envsetup.sh
             lunch lineage_zircon-ap3a-userdebug
       - run:
-          name: "Build the ROM"
-          command: |
-            m evolution
-      - run:
-          name: "Save ROM as Artifact"
-          command: |
-            mkdir -p /tmp/artifacts
-            cp out/target/product/zircon/evolution*.zip /tmp/artifacts/
-      - store_artifacts:
-          path: /tmp/artifacts
-          destination: rom-builds
+          name: "Build ROM"
+          command: m evolution
 
 workflows:
-  build-rom-workflow:
+  version: 2
+  build-and-test:
     jobs:
       - build-rom
