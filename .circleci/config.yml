@@ -1,47 +1,50 @@
+# CircleCI configuration file for building Evolution X ROM
 version: 2.1
 
+# Define the build job
 jobs:
   build-rom:
     docker:
       - image: cimg/base:current
+    resource_class: large
     steps:
       - checkout
       - run:
-          name: "Install dependencies"
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev \
-              gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev \
-              lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip python-is-python3 \
-              bc ccache libstdc++6 ninja-build
-      - run:
-          name: "Configure Git"
+          name: "Set up Git configuration"
           command: |
             git config --global user.email "diamondguys256x@gmail.com"
             git config --global user.name "NoNameBuilder"
       - run:
-          name: "Install repo command"
+          name: "Install required tools"
           command: |
-            mkdir -p ~/bin
-            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-            chmod a+x ~/bin/repo
-            export PATH=~/bin:$PATH
+            sudo apt-get update && sudo apt-get install -y \
+              python3 curl unzip git repo ccache openjdk-11-jdk
       - run:
-          name: "Sync ROM sources"
+          name: "Initialize repo"
           command: |
-            repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs
+            repo init -u https://github.com/Evolution-X/manifest -b vic
+      - run:
+          name: "Sync repo"
+          command: |
             repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
       - run:
           name: "Pull additional repositories"
           command: |
-            git clone https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
-            git clone https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
-            git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
-            git clone https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
+            git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
+            git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
+            git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
+            git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
       - run:
-          name: "Set up build environment"
+          name: "Source build environment"
           command: |
-            source build/envsetup.sh
+            export USE_CCACHE=1
+            export CCACHE_DIR=~/.ccache
+            export CCACHE_EXEC=/usr/bin/ccache
+            ccache -M 50G
+            . build/envsetup.sh
+      - run:
+          name: "Lunch device configuration"
+          command: |
             lunch lineage_zircon-ap3a-userdebug
       - run:
           name: "Start ROM build"
@@ -49,6 +52,7 @@ jobs:
             m evolution
 
 workflows:
-  build-rom-workflow:
+  version: 2
+  build-and-deploy:
     jobs:
       - build-rom
