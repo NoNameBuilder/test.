@@ -43,10 +43,10 @@ jobs:
             export CCACHE_DIR=~/.ccache
             export CCACHE_EXEC=/usr/bin/ccache
             ccache -M 50G
-            source build/envsetup.sh
       - run:
           name: "Lunch device configuration"
           command: |
+            . build/envsetup.sh
             lunch lineage_zircon-ap3a-userdebug
       - run:
           name: "Start ROM build"
@@ -58,4 +58,3 @@ workflows:
   build-and-deploy:
     jobs:
       - build-rom
-      
