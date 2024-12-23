@@ -28,7 +28,7 @@ jobs:
       - run:
           name: "Pull additional repositories"
           command: |
-            # Existing repositories
+            # Device, kernel, and vendor repositories
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon device/xiaomi/zircon
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
@@ -41,21 +41,21 @@ jobs:
             git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon-firmware vendor/xiaomi/zircon-firmware
             git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon-miuicamera vendor/xiaomi/zircon-miuicamera
       - run:
-          name: "Set up build environment"
+          name: "Set up build environment and start build"
           command: |
             export USE_CCACHE=1
             export CCACHE_DIR=~/.ccache
             export CCACHE_EXEC=/usr/bin/ccache
             ccache -M 50G
-      - run:
-          name: "Lunch device configuration"
-          command: |
+
+            # Set up environment
             . build/envsetup.sh
-            lunch lineage_zircon-ap3a-userdebug
-      - run:
-          name: "Start ROM build"
-          command: |
-            m evolution
+
+            # Lunch device configuration
+            lunch evolution_zircon-ap3a-userdebug
+
+            # Start Evolution X build
+            make evolution -j$(nproc --all)
 
 workflows:
   version: 2
