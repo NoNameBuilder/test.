@@ -89,6 +89,10 @@ jobs:
           name: "Set up build environment"
           command: |
             . build/envsetup.sh
+            export PATH=$PATH:$PWD/prebuilts/misc/linux-x86/ccache
+            export USE_CCACHE=1
+            ccache -M 50G
+
       - run:
           name: "Lunch the device"
           command: |
