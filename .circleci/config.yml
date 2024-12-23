@@ -15,6 +15,11 @@ jobs:
               lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip python-is-python3 \
               bc ccache libstdc++6 ninja-build
       - run:
+          name: "Configure Git"
+          command: |
+            git config --global user.email "diamondguys256x@gmail.com"
+            git config --global user.name "NoNameBuilder"
+      - run:
           name: "Install repo command"
           command: |
             mkdir -p ~/bin
@@ -32,26 +37,4 @@ jobs:
             git clone https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
             git clone https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
             git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
-            git clone https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
-            git clone https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules kernel/xiaomi/mt6886/modules
-      - run:
-          name: "Set up build environment"
-          command: |
-            . build/envsetup.sh
-            export PATH=$PATH:$PWD/prebuilts/misc/linux-x86/ccache
-            export USE_CCACHE=1
-            ccache -M 50G
-      - run:
-          name: "Lunch the device"
-          command: |
-            . build/envsetup.sh
-            lunch lineage_zircon-ap3a-userdebug
-      - run:
-          name: "Build ROM"
-          command: m evolution
-
-workflows:
-  version: 2
-  build-and-test:
-    jobs:
-      - build-rom
+            git clone https://github.com/zircon-development/android_device_mediatek_se
