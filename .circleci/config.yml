@@ -35,10 +35,15 @@ jobs:
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
       - run:
+          name: "Link device tree"
+          command: |
+            mkdir -p device/xiaomi/zircon
+            ln -s $(pwd)/vendor/xiaomi/zircon device/xiaomi/zircon
+      - run:
           name: "Source build environment and set up device"
           command: |
             source build/envsetup.sh
-            breakfast zircon
+            breakfast lineageos_zircon_ap3a-userdebug
       - run:
           name: "Set up ccache"
           command: |
@@ -56,4 +61,3 @@ workflows:
   build-and-deploy:
     jobs:
       - build-rom
-      
