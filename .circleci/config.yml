@@ -52,7 +52,7 @@ jobs:
             . build/envsetup.sh
 
             # Lunch device configuration
-            lunch evolution_zircon-ap3a-userdebug
+            lunch lineage_zircon-ap3a-userdebug
 
             # Start Evolution X build
             make evolution -j$(nproc --all)
