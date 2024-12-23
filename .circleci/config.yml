@@ -35,17 +35,17 @@ jobs:
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
       - run:
-          name: "Source build environment"
+          name: "Source build environment and set up device"
+          command: |
+            source build/envsetup.sh
+            breakfast zircon
+      - run:
+          name: "Set up ccache"
           command: |
             export USE_CCACHE=1
             export CCACHE_DIR=~/.ccache
             export CCACHE_EXEC=/usr/bin/ccache
             ccache -M 50G
-            source build/envsetup.sh
-      - run:
-          name: "Lunch device configuration"
-          command: |
-            lunch lineage_zircon-ap3a-userdebug
       - run:
           name: "Start ROM build"
           command: |
@@ -56,3 +56,4 @@ workflows:
   build-and-deploy:
     jobs:
       - build-rom
+      
