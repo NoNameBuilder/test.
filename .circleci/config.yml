@@ -1,7 +1,5 @@
-# CircleCI configuration file for building Evolution X ROM
 version: 2.1
 
-# Define the build job
 jobs:
   build-rom:
     docker:
@@ -30,12 +28,18 @@ jobs:
       - run:
           name: "Pull additional repositories"
           command: |
+            # Existing repositories
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon device/xiaomi/zircon
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_xiaomi_zircon-miuicamera device/xiaomi/zircon-miuicamera
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 kernel/xiaomi/mt6886
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886-modules kernel/xiaomi/mt6886-modules
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_device_mediatek_sepolicy_vndr device/mediatek/sepolicy_vndr
             git clone --depth=1 --progress --verbose https://github.com/zircon-development/android_kernel_xiaomi_mt6886 -b lineage-22.0-dtbo dtbo
+
+            # Missing repositories
+            git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
+            git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon-firmware vendor/xiaomi/zircon-firmware
+            git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon-miuicamera vendor/xiaomi/zircon-miuicamera
       - run:
           name: "Set up build environment"
           command: |
