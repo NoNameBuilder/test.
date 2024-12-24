@@ -18,6 +18,13 @@ jobs:
             sudo apt-get update && sudo apt-get install -y \
               python3 curl unzip git repo ccache openjdk-11-jdk
       - run:
+          name: "Install and setup ZRam"
+          command: |
+           sudo dd if=/dev/zero of=/swapfile bs=1G count=64
+           sudo chmod 600 /swapfile
+           sudo mkswap /swapfile
+           sudo swapon /swapfile
+      - run:
           name: "Initialize repo"
           command: |
             repo init -u https://github.com/Evolution-X/manifest -b vic
