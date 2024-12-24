@@ -22,9 +22,11 @@ jobs:
           command: |
             repo init -u https://github.com/Evolution-X/manifest -b vic
       - run:
-          name: "Sync repo"
+          name: "Force clean repo sync"
           command: |
-            repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+            repo forall -c 'git reset --hard && git clean -fdx'
+            repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
+            repo sync -j1 --fail-fast --force-sync --no-clone-bundle --no-tags
       - run:
           name: "Pull additional repositories"
           command: |
