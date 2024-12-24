@@ -42,6 +42,7 @@ jobs:
             git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon vendor/xiaomi/zircon
             git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon-firmware vendor/xiaomi/zircon-firmware
             git clone --depth=1 --progress --verbose https://git.mainlining.org/zircon-development/proprietary_vendor_xiaomi_zircon-miuicamera vendor/xiaomi/zircon-miuicamera
+            git clone https://github.com/xiaomi-mediatek-devs/android_hardware_mediatek -b lineage-22.0 ./hardware/mediatek
       - run:
           name: "Set up build environment and start build"
           command: |
