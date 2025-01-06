@@ -10,20 +10,13 @@ jobs:
       - run:
           name: "Set up Git configuration"
           command: |
-            git config --global user.email "diamondguys256x@gmail.com"
-            git config --global user.name "NoNameBuilder"
+            git config --global user.email "insert-email"
+            git config --global user.name "insert-your-github-name"
       - run:
           name: "Install required tools"
           command: |
             sudo apt-get update && sudo apt-get install -y \
               python3 curl unzip git repo ccache openjdk-11-jdk
-      - run:
-          name: "Install and setup ZRam"
-          command: |
-           sudo dd if=/dev/zero of=/swapfile bs=1G count=64
-           sudo chmod 600 /swapfile
-           sudo mkswap /swapfile
-           sudo swapon /swapfile
       - run:
           name: "Initialize repo"
           command: |
